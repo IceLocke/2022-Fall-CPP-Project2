@@ -6,6 +6,7 @@
 #include <iostream>
 #include <functional>
 #include "expression.h"
+
 using std::isdigit;
 using std::function;
 using std::string;
