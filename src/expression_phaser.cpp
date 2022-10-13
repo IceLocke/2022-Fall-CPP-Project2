@@ -1,6 +1,6 @@
 // Code Reference: https://blog.csdn.net/qq_45768060/article/details/105414612
 
-#include "expressionPhaser.h"
+#include "expression_phaser.h"
 #include "function.cpp"
 #include "expression.h"
 #include <map>
@@ -8,6 +8,7 @@
 #include <vector>
 #include <string>
 #include <cstring>
+#include <iostream>
 #include <functional>
 
 using std::isdigit;
@@ -15,14 +16,10 @@ using std::function;
 using std::string;
 using std::vector;
 using std::stack;
+using std::cerr;
+using std::endl;
 using std::map;
 
-stack<string> operators;
-stack<number> nums;
-vector<string> strings;
-vector<stringType> string_types;
-map<string, expression> &var;
-map<string, function<number(number)>> &functions;
 
 // Divide string to parts: numbers, variables, functions, and operators
 // Consider situations that may occur in the input
@@ -31,7 +28,7 @@ map<string, function<number(number)>> &functions;
 // 3 - Operators: +, -, *, /, and ()
 // 4 - Math functions
 // assume that input is valid
-void divide_string(expression e) {
+void ExpressionPhaser::divide_string(expression e) {
     string &str = e.str;
     string num, word;
     bool is_variable = false;
@@ -56,8 +53,12 @@ void divide_string(expression e) {
                     strings.push_back(word);
                     if (var.count(word))
                         string_types.push_back(VARIABLE);
-                    if (functions.count(word))
+                    else if (functions.count(word))
                         string_types.push_back(FUNCTION);
+                    else {
+                        cerr << "Undefined function or variable!" << endl;
+                        return;
+                    }
                     word.erase();
                 }
                 else {
@@ -74,7 +75,7 @@ void divide_string(expression e) {
     if (word.length()) strings.push_back(word);
 }
 
-bool is_equation(expression e) {
+bool ExpressionPhaser::is_equation(expression e) {
     string &str = e.str;
     int len = str.length();
 
@@ -90,7 +91,7 @@ bool is_function(string s) {
     else return false;
 }
 
-void caculate(bool is_function) {
+void ExpressionPhaser::calculate_top(bool is_function) {
     if (is_function) {
         function<number(number)> &func = functions[operators.top()];
         number top_num = nums.top();
@@ -99,12 +100,28 @@ void caculate(bool is_function) {
         operators.pop();
         return;
     }
-    
-    
+
+    // from left to right, get numbers from up to down
+    char op = operators.top()[0];
+    operators.pop();
+    number b = nums.top();
+    nums.pop();
+    number a = nums.top();
+    nums.pop();
+    switch (op) {
+        case '+': nums.push(a + b); break;
+        case '-': nums.push(a - b); break;
+        case '*': nums.push(a * b); break;
+        case '/': nums.push(a / b); break;
+        case '%': nums.push(a % b); break;
+        case '^': nums.push(a ^ b); break;
+        default:
+            cerr << "Unkown operator!" << endl;
+            break;
+    }
 }
 
-// Priority List:
-operatorPriority operator_priority(char ch) {
+ExpressionPhaser::OperatorPriority ExpressionPhaser::operator_priority(char ch) {
     if (ch == '+' || ch == '-')
         return LOW;
     if (ch == '*' || ch == '/' || ch == '%')
@@ -114,22 +131,23 @@ operatorPriority operator_priority(char ch) {
     return NOT_OPERATOR;
 }
 
-expression caculate_expression(expression e, map<string, expression> &variables) {
+number ExpressionPhaser::caculate_expression(expression e, map<string, expression> &variables) {
     var = variables;
     divide_string(e);
 
     int strings_size = strings.size();
     for (int i = 0; i < strings_size; i++) {
         if (string_types[i] == OPERATOR) {
+            // pass low priority operators, deal with medium priority
             if (operator_priority(strings[i][0]) == LOW) {
                 while (!operators.empty() && operators.top()[0] != '(')
-                    caculate(false);
+                    calculate_top(false);
                 operators.push(strings[i]);
             }
-            // *, /, %, high priority
+            // deal with operators with higher priority
             else if (operator_priority(strings[i][0] == MEDIUM)) {
                 while (!operators.empty() && operator_priority(operators.top()[0]) == MEDIUM)
-                    caculate(false);
+                    calculate_top(false);
                 operators.push(strings[i]);
             }
             else if (operator_priority(strings[i][0] == HIGH))
@@ -138,12 +156,24 @@ expression caculate_expression(expression e, map<string, expression> &variables)
                 operators.push(strings[i]);
             else if (strings[i][0] == ')') {
                 while (operators.top() != "(")
-                    caculate(false);
+                    calculate_top(false);
                 operators.pop();
                 if (!operators.empty())
                     if (is_function(operators.top()))
-                        caculate(true);
+                        calculate_top(true);
+            }
+            else {
+                number num;
+                if (string_types[i] == VARIABLE)
+                    num = *variables[strings[i]].value;
+                else if (string_types[i] == NUMBER)
+                    num = number(strings[i]);
+                nums.push(num);
             }
         }
     }
+    while (!operators.empty())
+        calculate_top(false);
+    
+    return nums.top();
 }
