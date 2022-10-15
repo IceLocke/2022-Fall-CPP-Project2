@@ -66,6 +66,7 @@ long double number::to_longdouble() {
     if (expo < 0)
         for (int i = 1; i <= -expo; i++)
             res = res / 10.0;
+    cout << "to_longdouble ok" << endl;
     return is_negtive ? res * -1.0 : res;
 }
 
@@ -74,6 +75,7 @@ double number::to_double() {
 }
 
 string number::to_string() {
+    print();
     int pre_flag = length;
     while (digits[pre_flag] == 0 && pre_flag >=0) pre_flag--;
     int suf_flag = 0;
@@ -85,7 +87,7 @@ string number::to_string() {
     }
     if (expo < 0 && expo + (pre_flag + 1) <= 0) {
             res.append("0.");
-            for (register int i = 1; i <=  -expo  - (pre_flag - suf_flag + 1); i++)
+            for (register int i = 1; i <=  -expo  - (pre_flag + 1); i++)
                 res.push_back('0');
         }
         for (register int i = pre_flag; i >= suf_flag; i--) {

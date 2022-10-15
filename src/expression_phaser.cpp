@@ -72,7 +72,6 @@ void ExpressionPhaser::divide_string(expression e) {
             else {
                 if (word.length()) {
                     strings.push_back(word);
-                    cout << word << endl;
                     if (var->count(word))
                         string_types.push_back(VARIABLE);
                     else if (is_function(word))
@@ -135,7 +134,7 @@ void ExpressionPhaser::calculate_top(bool is_function) {
     nums.pop();
     number a = nums.top();
     nums.pop();
-    switch (op) {
+    switch (op) { 
         case '+': nums.push(a + b); break;
         case '-': nums.push(a - b); break;
         case '*': nums.push(a * b); break;

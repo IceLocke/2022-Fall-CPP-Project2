@@ -30,23 +30,16 @@ int main() {
         cin >> e.str;
         if (e.str != "quit") {
             if (phaser->is_equation(e)) {
-                cout << "is equation" << endl;
                 int pos;
                 for (pos = 0; pos < e.str.length(); pos++)
                     if (e.str[pos] == '=')
                         break;
                 if (pos != 0) {
                     var[e.str.substr(0, pos)] = number(e.str.substr(2, e.str.length()-1));
-                    cout << "add var: " << e.str.substr(0, pos) << "  " << var[e.str.substr(0, pos)].to_string() << endl;
                 }
-                else cerr << "No variable name!";
-                cout << pos << endl;
-                cout << e.str.substr(0, pos) << endl;
-                cout << var[e.str.substr(0, pos)].to_string() << endl;
-                
+                else cerr << "No variable name!";               
             }
             else {
-                cout << "is expression" << endl;
                 res = phaser->calculate_expression(e);
                 res.print();
                 cout << res.to_string() << endl;
