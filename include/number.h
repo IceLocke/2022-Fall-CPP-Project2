@@ -9,7 +9,9 @@ struct number {
     bool is_negtive = false;
 
     long double to_longdouble();
+    double to_double();
     string to_string();
+//    int get_frac_digits();
 
     number (string str);
     number (long double lf);

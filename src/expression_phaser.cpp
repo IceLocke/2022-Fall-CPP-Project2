@@ -1,8 +1,6 @@
 // Code Reference: https://blog.csdn.net/qq_45768060/article/details/105414612
 
-#include "expression_phaser.h"
-#include "function.cpp"
-#include "expression.h"
+#include "../include/expression_phaser.h"
 #include <map>
 #include <stack>
 #include <vector>
@@ -17,9 +15,14 @@ using std::string;
 using std::vector;
 using std::stack;
 using std::cerr;
+using std::cout;
 using std::endl;
 using std::map;
 
+ExpressionPhaser::ExpressionPhaser(map<string, number> *vari, map<string, function<number(number)>> *func){
+    this->var = vari;
+    this->functions = func;
+}
 
 // Divide string to parts: numbers, variables, functions, and operators
 // Consider situations that may occur in the input
@@ -29,6 +32,8 @@ using std::map;
 // 4 - Math functions
 // assume that input is valid
 void ExpressionPhaser::divide_string(expression e) {
+    cout << "dividing string" << endl;
+
     string &str = e.str;
     string num, word;
     bool is_variable = false;
@@ -38,7 +43,7 @@ void ExpressionPhaser::divide_string(expression e) {
     int len = str.length(), i = 0;
     while (i < len) {
         if (isdigit(str[i]) || str[i] == '.')
-            num.push_back(str[i++]);
+            num.push_back(str[i]);
         else {
             if (num.length()) {
                 strings.push_back(num);
@@ -47,16 +52,17 @@ void ExpressionPhaser::divide_string(expression e) {
             }
             // funtion name or variable name
             if (isalpha(str[i]))
-                word.push_back(str[i++]);
+                word.push_back(str[i]);
             else {
                 if (word.length()) {
                     strings.push_back(word);
-                    if (var.count(word))
+                    cout << word << endl;
+                    if (var->count(word))
                         string_types.push_back(VARIABLE);
-                    else if (functions.count(word))
+                    else if (functions->count(word))
                         string_types.push_back(FUNCTION);
                     else {
-                        cerr << "Undefined function or variable!" << endl;
+                        cerr << word << ": Undefined function or variable!" << endl;
                         return;
                     }
                     word.erase();
@@ -64,15 +70,20 @@ void ExpressionPhaser::divide_string(expression e) {
                 else {
                     // operators and ( )
                     if (!isspace(str[i])) {
-                        strings.push_back(str.substr(i, i));
+                        strings.push_back(str.substr(i, 1));
                         string_types.push_back(OPERATOR);
                     }
                 }
             }
         }
+        i++;
     }
     if (num.length()) strings.push_back(num);
     if (word.length()) strings.push_back(word);
+
+    cout << strings.size() << endl;
+    for (int i = 0; i < strings.size(); i++)
+        cout << strings[i] << " ";
 }
 
 bool ExpressionPhaser::is_equation(expression e) {
@@ -93,7 +104,7 @@ bool is_function(string s) {
 
 void ExpressionPhaser::calculate_top(bool is_function) {
     if (is_function) {
-        function<number(number)> &func = functions[operators.top()];
+        function<number(number)> &func = (*functions)[operators.top()];
         number top_num = nums.top();
         nums.pop();
         nums.push(func(top_num));
@@ -131,10 +142,8 @@ ExpressionPhaser::OperatorPriority ExpressionPhaser::operator_priority(char ch) 
     return NOT_OPERATOR;
 }
 
-number ExpressionPhaser::caculate_expression(expression e, map<string, expression> &variables) {
-    var = variables;
+number ExpressionPhaser::calculate_expression(expression e) {
     divide_string(e);
-
     int strings_size = strings.size();
     for (int i = 0; i < strings_size; i++) {
         if (string_types[i] == OPERATOR) {
@@ -165,7 +174,7 @@ number ExpressionPhaser::caculate_expression(expression e, map<string, expressio
             else {
                 number num;
                 if (string_types[i] == VARIABLE)
-                    num = *variables[strings[i]].value;
+                    num = (*var)[strings[i]];
                 else if (string_types[i] == NUMBER)
                     num = number(strings[i]);
                 nums.push(num);
