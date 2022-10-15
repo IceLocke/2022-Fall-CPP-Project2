@@ -11,6 +11,7 @@ struct number {
     long double to_longdouble();
     double to_double();
     string to_string();
+    void print();
 //    int get_frac_digits();
 
     number (string str);

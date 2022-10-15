@@ -2,6 +2,7 @@
 #include <cmath>
 #include <string>
 #include <cstring>
+#include <iostream>
 #include <string.h>
 
 using std::string;
@@ -11,6 +12,15 @@ using std::log10;
 using std::max;
 using std::fmod;
 using std::pow;
+using std::cout;
+using std::endl;
+
+void number::print() {
+    for (int i = 0; i < length; i++)
+        cout << digits[i];
+    cout << endl << "expo:" << expo << endl;
+    return;
+}
 
 number::number () {
     memset(digits, 0, sizeof(digits));
@@ -33,6 +43,7 @@ number::number(string str) {
 number::number(long double lf) {
     memset(digits, 0, sizeof(digits));
     string str = std::to_string(lf);
+    
     for (int i = str.length() - 1; i >= 0; i--) {
         if (str[i] == '-')
             is_negtive = true;
@@ -47,8 +58,8 @@ number::number(long double lf) {
 // exists precision loss
 long double number::to_longdouble() {
     long double res = 0.0;
-    for (int i = 0; i < length; i++)
-        res = res * 10.0 * digits[i];
+    for (int i = length - 1; i >= 0; i--)
+        res = res * 10.0 + digits[i];
     if (expo > 0)
         for (int i = 1; i <= expo; i++)
             res = res * 10.0;
@@ -64,15 +75,28 @@ double number::to_double() {
 
 string number::to_string() {
     int pre_flag = length;
-    while (digits[pre_flag] == 0) pre_flag--;
+    while (digits[pre_flag] == 0 && pre_flag >=0) pre_flag--;
     int suf_flag = 0;
-    while (digits[suf_flag] == 0) suf_flag++;
+    while (digits[suf_flag] == 0 && suf_flag < length) suf_flag++;
     string res;
-    for (register int i = pre_flag; i >= suf_flag; i--) {
-            res.push_back(digits[i] + '0');
-            if (i == pre_flag && i != suf_flag)
-                res.push_back('.');
+    if (pre_flag <= suf_flag && digits[suf_flag] == 0) {
+        res.push_back('0');
+        return res;
     }
+    if (expo < 0 && expo + (pre_flag + 1) <= 0) {
+            res.append("0.");
+            for (register int i = 1; i <=  -expo  - (pre_flag - suf_flag + 1); i++)
+                res.push_back('0');
+        }
+        for (register int i = pre_flag; i >= suf_flag; i--) {
+            res.push_back(digits[i] + '0');
+            if (-i == expo && i != suf_flag)
+                res.push_back('.');
+        }
+        if (expo > 0) {
+            for (register int i = 1; i <= expo + suf_flag; i++)
+                res.push_back('0');
+        }
     return res;
 }
 
@@ -99,6 +123,7 @@ number operator+ (number &a, number &b) {
         if (a.is_negtive)
             res.is_negtive = true;
         res.length = res_len;
+        res.expo = x->expo;
         return res;
     }
     else if (!a.is_negtive && b.is_negtive)
