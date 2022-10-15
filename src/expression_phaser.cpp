@@ -210,7 +210,6 @@ number ExpressionPhaser::calculate_expression(expression e) {
                 num = (*var)[strings[i]];
             else
                 num = number(strings[i]);
-            cout << "push number: " << num.to_double() << endl;
             nums.push(num);
         }
     }
