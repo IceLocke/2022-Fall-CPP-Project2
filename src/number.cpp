@@ -43,7 +43,7 @@ number::number(string str) {
 number::number(long double lf) {
     memset(digits, 0, sizeof(digits));
     string str = std::to_string(lf);
-    
+    length = 0;
     for (int i = str.length() - 1; i >= 0; i--) {
         if (str[i] == '-')
             is_negtive = true;
@@ -75,12 +75,13 @@ double number::to_double() {
 }
 
 string number::to_string() {
-    print();
     int pre_flag = length;
     while (digits[pre_flag] == 0 && pre_flag >=0) pre_flag--;
     int suf_flag = 0;
     while (digits[suf_flag] == 0 && suf_flag < length) suf_flag++;
     string res;
+    if (is_negtive)
+        res.push_back('-');
     if (pre_flag <= suf_flag && digits[suf_flag] == 0) {
         res.push_back('0');
         return res;

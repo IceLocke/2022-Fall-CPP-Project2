@@ -165,15 +165,21 @@ number ExpressionPhaser::calculate_expression(expression e) {
         cout << nums.size() << " " << operators.size() << endl;
         if (string_types[i] == OPERATOR || string_types[i] == FUNCTION) {
             // pass low priority operators, deal with medium priority
-            if (operator_priority(strings[i][0]) == LOW) {
-                while (!operators.empty() && operators.top()[0] != '(')
+            if (operator_priority(strings[i][0]) == LOW) { 
+                while (!operators.empty()) {
+                    if (operators.top()[0] == '(')
+                        break;
                     calculate_top(false);
+                }
                 operators.push(strings[i]);
             }
             // deal with operators with higher priority
             else if (operator_priority(strings[i][0]) == MEDIUM) {
-                while (!operators.empty() && operator_priority(operators.top()[0]) == MEDIUM)
+                while (!operators.empty()) {
+                    if (operator_priority(operators.top()[0]) != MEDIUM)
+                        break;
                     calculate_top(false);
+                }
                 operators.push(strings[i]);
             }
             else if (operator_priority(strings[i][0]) == HIGH)
