@@ -140,8 +140,20 @@ number operator- (number &a, number &b) {
 }
 
 number operator* (number &a, number &b) {
-    
-    return number(a.to_longdouble() * b.to_longdouble());
+    number res;
+    res.is_negtive = a.is_negtive ^ b.is_negtive;
+    res.expo = a.expo + b.expo;
+    res.length = a.length + b.length - 1;
+    for (int i = 0; i < res.length; i++) {
+        for (int j = 0; j <= i; j++)
+            res.digits[i] += a.digits[j] * b.digits[i - j];
+        if (res.digits[i] >= 10) {
+            res.digits[i + 1] += res.digits[i] / 10;
+            res.digits[i] %= 10;
+        }
+    }
+    res.print();
+    return res;
 }
 
 number operator/ (number &a, number &b) {
