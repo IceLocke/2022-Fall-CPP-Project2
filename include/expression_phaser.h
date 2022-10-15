@@ -42,6 +42,7 @@ struct ExpressionPhaser {
 
     void divide_string(expression e);
     bool is_equation(expression e);
+    bool is_function(string func);
     void calculate_top(bool is_function);
     OperatorPriority operator_priority(char ch);
     number calculate_expression(expression e);

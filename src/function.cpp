@@ -29,16 +29,16 @@ number exp_f(number x) {
     return number(std::exp(x.to_longdouble()));
 }
 
+number sqrt_f(number x) {
+    return number(std::sqrt(x.to_longdouble()));
+}
+
 map<string, function<number(number)>> get_functions() {
-    function<number(number)> sin_func = sin_f,
-                             cos_func = cos_f,
-                             arctan_func = arctan_f,
-                             ln_func = ln_f,
-                             exp_func = exp_f;
-    functions["sin"] = sin_func;
-    functions["cos"] = cos_func;
-    functions["arctan"] = arctan_func;
-    functions["ln"] = ln_func;
-    functions["exp"] = exp_func;
+    functions["sin"] = sin_f;
+    functions["cos"] = cos_f;
+    functions["arctan"] = arctan_f;
+    functions["ln"] = ln_f;
+    functions["exp"] = exp_f;
+    functions["sqrt"] = sqrt_f;
     return functions;
 }

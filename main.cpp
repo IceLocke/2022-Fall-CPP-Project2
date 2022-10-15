@@ -41,7 +41,6 @@ int main() {
             }
             else {
                 res = phaser->calculate_expression(e);
-                res.print();
                 cout << res.to_string() << endl;
             }
         }

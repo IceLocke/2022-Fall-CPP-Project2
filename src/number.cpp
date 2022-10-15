@@ -76,7 +76,7 @@ double number::to_double() {
 
 string number::to_string() {
     int pre_flag = length;
-    while (digits[pre_flag] == 0 && pre_flag >=0) pre_flag--;
+    while (digits[pre_flag] == 0 && pre_flag >=0 ) pre_flag--;
     int suf_flag = 0;
     while (digits[suf_flag] == 0 && suf_flag < length) suf_flag++;
     string res;
@@ -88,18 +88,17 @@ string number::to_string() {
     }
     if (expo < 0 && expo + (pre_flag + 1) <= 0) {
             res.append("0.");
-            for (register int i = 1; i <=  -expo  - (pre_flag + 1); i++)
+            for (int i = 1; i <=  -expo  - (pre_flag + 1); i++)
                 res.push_back('0');
         }
-        for (register int i = pre_flag; i >= suf_flag; i--) {
+        for (int i = pre_flag; i >= suf_flag; i--) {
             res.push_back(digits[i] + '0');
             if (-i == expo && i != suf_flag)
                 res.push_back('.');
         }
-        if (expo + pre_flag >= 1) {
-            for (register int i = 1; i <= expo + pre_flag; i++)
+        if (expo > 0)
+            for (int i = 1; i <= expo; i++)
                 res.push_back('0');
-        }
     return res;
 }
 
@@ -107,8 +106,6 @@ string number::to_string() {
 //  7654321.012
 //   000076.54321123
 number operator+ (number &a, number &b) {
-    cout << "negtive: " << a.is_negtive << " " << b.is_negtive << endl;
-    cout << a.to_string() << " " << b.to_string() << endl;
     if (a.is_negtive == b.is_negtive) {
         number *x = a.expo < b.expo ? &a : &b, 
             *y = a.expo < b.expo ? &b : &a;
@@ -152,7 +149,6 @@ number operator* (number &a, number &b) {
             res.digits[i] %= 10;
         }
     }
-    res.print();
     return res;
 }
 

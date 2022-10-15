@@ -29,8 +29,8 @@ bool is_operator(char ch) {
            ch == '%' || ch == '^' || ch == '(' || ch == ')';
 }
 
-bool is_function(string s) {
-    if (s == "sin" || s == "cos" || s == "arctan" || s == "ln" || s == "exp")
+bool ExpressionPhaser::is_function(string func) {
+    if (functions->count(func))
         return true;
     else return false;
 }
@@ -43,7 +43,6 @@ bool is_function(string s) {
 // 4 - Math functions
 // assume that input is valid
 void ExpressionPhaser::divide_string(expression e) {
-    cout << "dividing string" << endl;
 
     string &str = e.str;
     string num, word;
@@ -96,14 +95,6 @@ void ExpressionPhaser::divide_string(expression e) {
     }
     if (num.length()) strings.push_back(num);
     if (word.length()) strings.push_back(word);
-
-    cout << strings.size() << endl;
-    for (int i = 0; i < strings.size(); i++)
-        cout << strings.at(i) << " ";
-    cout << endl;
-    for (int i = 0; i < strings.size(); i++)
-        cout << string_types[i] << " ";
-    cout << endl;
 }
 
 bool ExpressionPhaser::is_equation(expression e) {
@@ -117,7 +108,6 @@ bool ExpressionPhaser::is_equation(expression e) {
 }
 
 void ExpressionPhaser::calculate_top(bool is_function) {
-    cout << "caculate" << endl;
     if (is_function) {
         function<number(number)> func = (*functions)[operators.top()];
         number top_num = nums.top();
@@ -140,7 +130,6 @@ void ExpressionPhaser::calculate_top(bool is_function) {
                     number top_num = nums.top();
                     top_num.is_negtive = !top_num.is_negtive;
                     nums.pop();
-                    cout << "special push number " << top_num.to_string() << endl;
                     nums.push(top_num);
                 }
             }
@@ -181,8 +170,6 @@ number ExpressionPhaser::calculate_expression(expression e) {
     divide_string(e);
     int strings_size = strings.size();
     for (int i = 0; i < strings_size; i++) {
-        cout << "start priority processing " << i << endl;
-        cout << nums.size() << " " << operators.size() << endl;
         if (string_types[i] == OPERATOR || string_types[i] == FUNCTION) {
             // pass low priority operators, deal with medium priority
             if (operator_priority(strings[i][0]) == LOW) { 
@@ -219,12 +206,11 @@ number ExpressionPhaser::calculate_expression(expression e) {
         }
         else {
             number num;
-            cout << string_types[i] << " "<< endl;
             if (var->count(strings[i]))
                 num = (*var)[strings[i]];
             else
                 num = number(strings[i]);
-            cout << "push number " << num.to_string() << endl;
+            cout << "push number: " << num.to_double() << endl;
             nums.push(num);
         }
     }
@@ -233,6 +219,9 @@ number ExpressionPhaser::calculate_expression(expression e) {
     
     number res = nums.top();
     nums.pop();
+    
+    while(!operators.empty()) operators.pop();
+    while(!nums.empty()) nums.pop();
 
     return res;
 }
