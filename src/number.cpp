@@ -17,7 +17,7 @@ using std::endl;
 
 void number::print() {
     for (int i = 0; i < length; i++)
-        cout << digits[i];
+        cout << digits[i] << " ";
     cout << endl << "expo:" << expo << endl;
     return;
 }
@@ -47,10 +47,11 @@ number::number(long double lf) {
     for (int i = str.length() - 1; i >= 0; i--) {
         if (str[i] == '-')
             is_negtive = true;
-        if (str[i] == '.')
+        else if (str[i] == '.')
             expo = i;
         else digits[length++] = str[i] - '0';
     }
+    if (lf < 0) is_negtive = true;
     if (expo != -1) expo = expo - length - is_negtive;
     else expo = 0;
 }
@@ -66,7 +67,6 @@ long double number::to_longdouble() {
     if (expo < 0)
         for (int i = 1; i <= -expo; i++)
             res = res / 10.0;
-    cout << "to_longdouble ok" << endl;
     return is_negtive ? res * -1.0 : res;
 }
 
@@ -96,8 +96,8 @@ string number::to_string() {
             if (-i == expo && i != suf_flag)
                 res.push_back('.');
         }
-        if (expo > 0) {
-            for (register int i = 1; i <= expo + suf_flag; i++)
+        if (expo + pre_flag >= 1) {
+            for (register int i = 1; i <= expo + pre_flag; i++)
                 res.push_back('0');
         }
     return res;
@@ -107,6 +107,8 @@ string number::to_string() {
 //  7654321.012
 //   000076.54321123
 number operator+ (number &a, number &b) {
+    cout << "negtive: " << a.is_negtive << " " << b.is_negtive << endl;
+    cout << a.to_string() << " " << b.to_string() << endl;
     if (a.is_negtive == b.is_negtive) {
         number *x = a.expo < b.expo ? &a : &b, 
             *y = a.expo < b.expo ? &b : &a;
@@ -129,9 +131,8 @@ number operator+ (number &a, number &b) {
         res.expo = x->expo;
         return res;
     }
-    else if (!a.is_negtive && b.is_negtive)
-        return (a - b);
-    else return (b - a);
+    else
+        return number(a.to_longdouble() + b.to_longdouble());
 }
 
 number operator- (number &a, number &b) {
@@ -139,6 +140,7 @@ number operator- (number &a, number &b) {
 }
 
 number operator* (number &a, number &b) {
+    
     return number(a.to_longdouble() * b.to_longdouble());
 }
 

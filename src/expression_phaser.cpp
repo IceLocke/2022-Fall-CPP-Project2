@@ -130,6 +130,26 @@ void ExpressionPhaser::calculate_top(bool is_function) {
     // from left to right, get numbers from up to down
     char op = operators.top()[0];
     operators.pop();
+
+    // check whether is a negtive number, or wrong expression
+    if (nums.size() == 1) {
+        if (op == '+' || op == '-') {
+                if (op == '+')
+                    return;
+                else {
+                    number top_num = nums.top();
+                    top_num.is_negtive = !top_num.is_negtive;
+                    nums.pop();
+                    cout << "special push number " << top_num.to_string() << endl;
+                    nums.push(top_num);
+                }
+            }
+        else {
+            cerr << "Wromg expression!";
+        }
+        return;
+    }
+
     number b = nums.top();
     nums.pop();
     number a = nums.top();
