@@ -134,7 +134,7 @@ void ExpressionPhaser::calculate_top(bool is_function) {
                 }
             }
         else {
-            cerr << "Wromg expression!";
+            cerr << "Wrong expression!";
         }
         return;
     }
@@ -219,7 +219,10 @@ number ExpressionPhaser::calculate_expression(expression e) {
     number res = nums.top();
     nums.pop();
     
-    while(!operators.empty()) operators.pop();
+    while(!operators.empty()) {
+        calculate_top(false);
+        operators.pop()
+    }
     while(!nums.empty()) nums.pop();
 
     return res;

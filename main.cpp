@@ -12,7 +12,7 @@ using std::string;
 using std::map;
 using std::cerr;
 
-string WELCOME_TEXT = "----------\n Simple caculator v1.0 \n Copyright Gong Linghu \n Tip: Enter 'quit' (without quote) to end the program. \n ---------\n";
+string WELCOME_TEXT = "----------\n Simple caculator v1.0 \n Copyright Gong Linghu \n Tip: Enter 'quit' (without quote) to end the program. \n---------\n";
 
 int main() {
     cout << WELCOME_TEXT;
